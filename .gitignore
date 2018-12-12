@@ -1,2 +1,8 @@
 
 Library/
+
+obj/
+
+Temp/
+
+\.vs/
