@@ -7,10 +7,10 @@
     <key>method</key>  
     <string>enterprise</string>  
     <key>teamID</key>
-    <string>K8EN9Z764W</string>
+    <string>xxxxxx</string>
     <key>provisioningProfiles</key>
     <dict>
-        <key>com.baiyao.ylqt</key>
+        <key>com.baiyao.xxxx</key>
         <string>ylqt_inhouse</string>
     </dict>
 </dict>

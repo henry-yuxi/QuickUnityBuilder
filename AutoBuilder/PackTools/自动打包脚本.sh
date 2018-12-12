@@ -220,16 +220,16 @@ if  [[ $BUILD_TARGET = "iOS" ]]; then
   fi
 fi
 
-#公司Fir账号的Token  2c5a5ecc1df1a247ce2ce9616dcbb4f6
+#公司Fir账号的Token  
 #个人Fir账号的Token  95c0c894b9ee035d1cc67761272822fb
 #处理上传流程
 
 if  [[ $FIR_TOKEN = "piaoyuzc@qq.com" ]]; then
   if [[ $BUILD_TARGET = "Android" ]]; then
-    FIR_TOKEN_ID="2c5a5ecc1df1a247ce2ce9616dcbb4f6"
+    FIR_TOKEN_ID=""
 	FIR_SHORT_NAME="ylqtswa"
   else
-    FIR_TOKEN_ID="2c5a5ecc1df1a247ce2ce9616dcbb4f6"
+    FIR_TOKEN_ID=""
 	FIR_SHORT_NAME="ylqtswi"
   fi
 else
