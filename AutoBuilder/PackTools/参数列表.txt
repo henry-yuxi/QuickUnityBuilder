@@ -1,0 +1,55 @@
+Jenkins插件参数预览
+
+Build_Target  要处理的平台  安卓 苹果
+Android
+iOS
+
+Build_Method  要执行的Unity方法
+BuildPackage
+BuildBundles
+BuildBundlesAndPackage
+
+Git_Operate  对git当前分支的处理  Stash 缓存当前分支  Clean 清理当前分支
+Clean
+Stash
+
+Git_Branch  git分支  具体选项如下
+资源加载-热更
+元旦版本
+2144商务服
+版署包
+会场包
+master
+dev
+
+Unity_Channel  渠道选项   
+test_out_1
+test_in_1
+2144
+commerce
+venue
+release
+
+Bundles_Version AB资源版本
+1000000
+
+Development_Build
+true
+false
+
+Write_Macro   需要写入的宏
+Upload_Bundles  是否上传资源包
+
+Fir_Token  第三方托管平台的账号
+piaoyuzc@qq.com
+henry890307@yeah.net
+
+Upload_Fir   是否上传第三方托管平台
+Upload_Bugly   是否上传符号表
+
+Publish_Mode
+Ad-hoc
+In-house
+App-Store
+
+
