@@ -1,6 +1,6 @@
 #!/bin/sh
 
-#接收参数
+#接收Jenkins可视化插件的参数
 BUILD_TARGET=$Build_Target
 UNITY_CHANNEL=$Unity_Channel;
 UPLOAD_BUNDLES=$Upload_Bundles
@@ -29,7 +29,7 @@ if [ ! -d $LOCAL_PATH ];then
     exit 1
 fi
 
-lftp -u hulinchao,hulinchao@123 -p 2122 192.168.10.181 <<EOF
+lftp -u hulinchao,hulinchao@123 -p 2122 xx-ip <<EOF
 cd ${REMOTE_PATH}
 lcd ${LOCAL_PATH}
 ls

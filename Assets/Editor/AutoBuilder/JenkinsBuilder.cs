@@ -149,6 +149,11 @@ public class JenkinsBuilder
         return scenes.ToArray();
     }
 
+    /// <summary>
+    /// 获取从Jenkins传过来的自定义参数
+    /// </summary>
+    /// <param name="name"></param>
+    /// <returns></returns>
     private static string GetJenkinsParameter(string name)
     {
         foreach (string arg in Environment.GetCommandLineArgs())

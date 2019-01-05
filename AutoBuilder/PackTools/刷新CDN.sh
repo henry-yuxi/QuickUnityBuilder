@@ -1,5 +1,6 @@
 #!/bin/sh
 
+#接收Jenkins可视化插件的参数
 BUILD_TARGET=$Build_Target
 UNITY_CHANNEL=$Unity_Channel;
 
