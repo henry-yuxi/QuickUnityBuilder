@@ -35,6 +35,7 @@ JP_UPLOAD_FIR=$Upload_Fir
 JP_UPLOAD_BUGLY=$Upload_Bugly
 JP_UPLOAD_BUNDLES=$Upload_Bundles
 JP_EXPORT_METHOD=$Ipa_Export_Method
+JP_UPLOAD_PACKAGE=$Upload_Package
 
 echo "--> 检测插件参数" 
 #参数非空判断
@@ -44,7 +45,7 @@ if [[ ! $JP_BUILD_TARGET || ! $JP_GIT_OPERATE || ! $JP_GIT_BRANCH || ! $JP_UNITY
 fi
 
 echo "--> 检测打包平台参数" 
-SUPPORT_TARGETS=("Android" "iOS")
+SUPPORT_TARGETS=("Android" "iOS" "PC")
 if echo "${SUPPORT_TARGETS[@]}" | grep -w $JP_BUILD_TARGET &>/dev/null; then
   echo "--> 当前打包平台参数: ${JP_BUILD_TARGET}" 
 else
@@ -58,11 +59,12 @@ UNITY_PATH="/Applications/Unity/Unity.app/Contents/MacOS/Unity"
 PROJ_BUILDER_TIME="`date +%Y%m%d_%H%M`"
 if [[ $JP_BUILD_TARGET = "Android" ]]; then
   PROJ_GIT_PATH="/Users/mac2144/Documents/YLProjects/yl_official_android/ylqtclient"
-  PROJ_PATH="${PROJ_GIT_PATH}/YL"
 elif  [[ $JP_BUILD_TARGET = "iOS" ]]; then
   PROJ_GIT_PATH="/Users/mac2144/Documents/YLProjects/yl_official_ios/ylqtclient"
-  PROJ_PATH="${PROJ_GIT_PATH}/YL"
+elif  [[ $JP_BUILD_TARGET = "PC" ]]; then
+  PROJ_GIT_PATH="/Users/mac2144/Documents/YLProjects/yl_official_pc/ylqtclient"  
 fi
+PROJ_PATH="${PROJ_GIT_PATH}/YL"
 
 PROJ_BUILDER_ROOT_PATH="${PROJ_GIT_PATH}/ProjectBuilder"
 PROJ_BUILDER_TOOL_PATH="${PROJ_BUILDER_ROOT_PATH}/PackTools"
@@ -123,12 +125,17 @@ if [[ $JP_BUILD_TARGET = "Android" ]]; then
   REMOTE_TARGET_NAME="ANDROID"
   PROJ_BUILDER_OUTPUT_ROOT_PATH="${PROJ_BUILDER_ROOT_PATH}/Output/ANDROID"
   PROJ_BUILDER_OUTPUT_PATH="${PROJ_BUILDER_OUTPUT_ROOT_PATH}/${JP_UNITY_SERVER}"
-  PROJ_BUILDER_LOG_PATH="${PROJ_BUILDER_OUTPUT_PATH}/project_bundle_builder.log"
+  PROJ_BUILDER_LOG_PATH="${PROJ_BUILDER_OUTPUT_PATH}/project_builder.log"
 elif [[ $JP_BUILD_TARGET = "iOS" ]]; then
   REMOTE_TARGET_NAME="IOS"  
   PROJ_BUILDER_OUTPUT_ROOT_PATH="${PROJ_BUILDER_ROOT_PATH}/Output/IOS"
   PROJ_BUILDER_OUTPUT_PATH="${PROJ_BUILDER_OUTPUT_ROOT_PATH}/Xcode_${JP_EXPORT_METHOD}_Output"
-  PROJ_BUILDER_LOG_PATH="${PROJ_BUILDER_OUTPUT_PATH}/project_bundle_builder.log"
+  PROJ_BUILDER_LOG_PATH="${PROJ_BUILDER_OUTPUT_PATH}/project_builder.log"
+elif [[ $JP_BUILD_TARGET = "PC" ]]; then
+  REMOTE_TARGET_NAME="PC"  
+  PROJ_BUILDER_OUTPUT_ROOT_PATH="${PROJ_BUILDER_ROOT_PATH}/Output/PC"
+  PROJ_BUILDER_OUTPUT_PATH="${PROJ_BUILDER_OUTPUT_ROOT_PATH}/${JP_UNITY_SERVER}"
+  PROJ_BUILDER_LOG_PATH="${PROJ_BUILDER_OUTPUT_PATH}/project_builder.log"
 fi
 
 echo "--> Set PROJ_BUILDER_OUTPUT_ROOT_PATH : ${PROJ_BUILDER_OUTPUT_ROOT_PATH}"
@@ -177,6 +184,10 @@ if  [[ $JP_BUILD_PACKAGE = "true" ]]; then
     REMOTE_TARGET_NAME="IOS"
     PACK_NAME="Xcode Project: ";
     PROJ_BUILDER_FILE_NAME="ylqt_iPhone_${JP_UNITY_SERVER}_${PROJ_BUILDER_TIME}"   
+  elif [[ $JP_BUILD_TARGET = "PC" ]]; then
+    REMOTE_TARGET_NAME="PC"
+    PACK_NAME="PC Project: ";
+    PROJ_BUILDER_FILE_NAME="ylqt_PC_${JP_UNITY_SERVER}_${PROJ_BUILDER_TIME}/ylqt_Setup.exe"   
   fi
 
   echo "--> Set PROJ_BUILDER_FILE_NAME : ${PROJ_BUILDER_FILE_NAME}" 
@@ -187,7 +198,7 @@ if  [[ $JP_BUILD_PACKAGE = "true" ]]; then
 
   if [[ $JP_BUILD_TARGET = "iOS" ]]; then
     if [ -d "$PROJ_BUILDER_OUTPUT_PATH/$PROJ_BUILDER_FILE_NAME" ] ; then
-	    rm -rf $PROJ_BUILDER_OUTPUT_PATH/$PROJ_BUILDER_FILE_NAME
+      rm -rf $PROJ_BUILDER_OUTPUT_PATH/$PROJ_BUILDER_FILE_NAME
       echo "--> ${PACK_NAME}${PROJ_BUILDER_FILE_NAME} 删除成功 "
     fi
   fi
@@ -202,20 +213,20 @@ if  [[ $JP_BUILD_PACKAGE = "true" ]]; then
   echo "--> Set UNITY3D_BUILD_METHOD : ${UNITY3D_BUILD_METHOD}" 
   $UNITY_PATH -quit -batchmode -nographics -projectPath $PROJ_PATH -executeMethod ${UNITY3D_BUILD_METHOD} Build_Target-$JP_BUILD_TARGET  Unity_Define-$JP_UNITY_DEFINE Ipa_Export_Method-$JP_EXPORT_METHOD Bundles_Version-$JP_BUNDLES_VERSION Unity_Server-$JP_UNITY_SERVER Unity_Channel-$JP_UNITY_CHANNEL Unity_SDK-$JP_UNITY_SDK Development_Build-$JP_DEVELOP_BUILD Build_Path-$PROJ_BUILDER_OUTPUT_PATH Build_FileName-$PROJ_BUILDER_FILE_NAME -logFile $PROJ_BUILDER_LOG_PATH
 
-  if [[ $JP_BUILD_TARGET = "Android" ]]; then
-    if [ -f "$PROJ_BUILDER_OUTPUT_PATH/$PROJ_BUILDER_FILE_NAME" ] ; then
+  if [[ $JP_BUILD_TARGET = "iOS" ]]; then
+    PROJ_EXPORT_FILE_PATH="${PROJ_BUILDER_OUTPUT_PATH}/${PROJ_BUILDER_FILE_NAME}"
+    if [ -d "$PROJ_EXPORT_FILE_PATH" ] ; then
       echo "--> ${PACK_NAME}${PROJ_BUILDER_FILE_NAME} 生成成功 "
     else
       echo "--> Error : ${PACK_NAME}${PROJ_BUILDER_FILE_NAME} 生成失败, Error building Player because scripts had compiler errors "
-      #echo `cat ${PROJ_BUILDER_LOG_PATH}`
       exit 1
     fi
-  elif [[ $JP_BUILD_TARGET = "iOS" ]]; then
-    if [ -d "$PROJ_BUILDER_OUTPUT_PATH/$PROJ_BUILDER_FILE_NAME" ] ; then
+  else
+    PROJ_EXPORT_FILE_PATH="${PROJ_BUILDER_OUTPUT_PATH}/${PROJ_BUILDER_FILE_NAME}"
+    if [ -f "$PROJ_EXPORT_FILE_PATH" ] ; then
       echo "--> ${PACK_NAME}${PROJ_BUILDER_FILE_NAME} 生成成功 "
     else
       echo "--> Error : ${PACK_NAME}${PROJ_BUILDER_FILE_NAME} 生成失败, Error building Player because scripts had compiler errors "
-      #echo `cat ${PROJ_BUILDER_LOG_PATH}`
       exit 1
     fi
   fi
@@ -321,7 +332,7 @@ fi
 #个人Fir账号的Token  95c0c894b9ee035d1cc67761272822fb
 #处理上传流程
 
-if  [[ $JP_UPLOAD_FIR = "true" && $JP_BUILD_PACKAGE = "true" ]]; then
+if  [[ $JP_UPLOAD_FIR = "true" && $JP_BUILD_PACKAGE = "true" && $JP_BUILD_TARGET != "PC" ]]; then
 
   echo '--> 发布应用到 fir.im平台'
   echo "--> Set JP_FIR_TOKEN : ${JP_FIR_TOKEN}" 
@@ -361,7 +372,7 @@ if  [[ $JP_UPLOAD_FIR = "true" && $JP_BUILD_PACKAGE = "true" ]]; then
     echo "--> 提交fir.im成功 "
   else
     echo "--> Error : 提交fir.im失败 "
-	  exit 0
+    exit 0
   fi
 fi
 #endregion
@@ -386,9 +397,10 @@ fi
 
 
 #region #判断是否需要上传资源文件到CDN
-if [[ $JP_UPLOAD_BUNDLES = "true" && $JP_BUILD_BUNDLES = "true" && $JP_UNITY_SERVER != "official" ]]; then
+if [[ ($JP_UPLOAD_BUNDLES = "true" && $JP_BUILD_BUNDLES = "true" && $JP_UNITY_SERVER != "official") ]]; then
 
   echo "--> 开始上传资源包到CDN" 
+
   echo "--> 上传 ${JP_BUILD_TARGET} Bundles"
   LOCAL_PATH=${PROJ_GIT_PATH}/AssetsBundle/${JP_UNITY_SERVER}/${REMOTE_TARGET_NAME}/Uploads/${REMOTE_TARGET_NAME}
   REMOTE_PATH=/${JP_UNITY_SERVER}/
@@ -412,7 +424,7 @@ exit
 EOF
 
   if [ $? = 0 ];then
-    echo "--> 上传${JP_BUILD_TARGET} Bundles成功 " 
+    echo "--> 上传${JP_BUILD_TARGET} Bundles Succeed " 
 
     echo "--> 开始刷新CDN" 
     python ${PROJ_BUILDER_TOOL_PATH}/Qcloud_CDN_API/QcloudCdnTools_V2.py RefreshCdnDir -u AKIDCCzXq6L0f5GG1XNrlcP3ShgPs52koNIx -p ZtxlIfnfHdjY7QTFl4A2e2B4g27wf8LI --dirs http://res.ylqt.2144gy.com/${JP_UNITY_SERVER}/${REMOTE_TARGET_NAME}/
@@ -422,12 +434,81 @@ EOF
       echo "--> Error : CDN刷新失败 "
     fi
   else
-    echo "--> Error : 上传${JP_BUILD_TARGET} Bundles失败 "
+    echo "--> Error : 上传${JP_BUILD_TARGET} Bundles Failed "
+    exit 1
+  fi
+fi
+#endregion
+
+#region #判断是否需要上传安装包到CDN
+if [[ ($JP_UPLOAD_PACKAGE = "true") ]]; then
+
+  echo "--> 开始上传安装包到CDN" 
+
+  echo "--> 上传 ${JP_BUILD_TARGET} Installation Package "
+  if [[ $JP_BUILD_TARGET = "Android" ]]; then
+    PROJ_BUILDER_FILE_NAME=${PROJ_BUILDER_FILE_NAME}
+    UPLOAD_ROOT_PATH=${PROJ_BUILDER_OUTPUT_PATH}
+    UPLOAD_FILE_NAME=${PROJ_BUILDER_FILE_NAME}
+    UPLOAD_PACKAGE_PATH=${UPLOAD_ROOT_PATH}/${UPLOAD_FILE_NAME}
+    MV_FILE_NAME=${PROJ_BUILDER_FILE_NAME}
+  elif [[ $JP_BUILD_TARGET = "iOS" ]]; then
+    PROJ_BUILDER_FILE_NAME=${PROJ_BUILDER_FILE_NAME}
+    UPLOAD_ROOT_PATH=${IPA_OUTPUT_PATH}/${PROJ_BUILDER_FILE_NAME}/
+    UPLOAD_FILE_NAME=${SCHEME}.ipa
+    UPLOAD_PACKAGE_PATH=${UPLOAD_ROOT_PATH}/${UPLOAD_FILE_NAME}
+    MV_FILE_NAME=${PROJ_BUILDER_FILE_NAME}.ipa
+  else
+    PROJ_BUILDER_FILE_NAME="ylqt_PC_${JP_UNITY_SERVER}_${PROJ_BUILDER_TIME}"
+    UPLOAD_ROOT_PATH=${PROJ_BUILDER_OUTPUT_PATH}/${PROJ_BUILDER_FILE_NAME}/
+    UPLOAD_FILE_NAME=${PROJ_BUILDER_FILE_NAME}.exe
+    UPLOAD_PACKAGE_PATH=${UPLOAD_ROOT_PATH}/${UPLOAD_FILE_NAME}
+    MV_FILE_NAME=${PROJ_BUILDER_FILE_NAME}.exe
+  fi
+
+
+  REMOTE_PATH=/Packages/${JP_BUILD_TARGET}/${JP_UNITY_SERVER}/
+
+  echo "--> Set UPLOAD_PACKAGE_PATH  : ${UPLOAD_PACKAGE_PATH}" 
+  echo "--> Set REMOTE_PATH : ${REMOTE_PATH}" 
+
+  if [ ! -f $UPLOAD_PACKAGE_PATH ];then
+    echo "--> Error : 本地没有需要上传的安装包 : ${UPLOAD_PACKAGE_PATH}"
+    exit 1
+  fi
+
+lftp -u hulinchao,hulinchao@123 -p 2122 192.168.10.181 <<EOF
+set ftp:list-empty-ok yes
+cd /
+mkdir -p ${REMOTE_PATH}
+cd ${REMOTE_PATH}
+lcd ${UPLOAD_ROOT_PATH}
+put ${UPLOAD_PACKAGE_PATH}
+mv ${UPLOAD_FILE_NAME} ${MV_FILE_NAME}
+exit
+EOF
+
+  if [ $? = 0 ];then
+    echo "--> 上传${JP_BUILD_TARGET} Installation Package Succeed " 
+
+    echo "--> " 
+    echo "--> Installation Package Download Url: http://res.ylqt.2144gy.com${REMOTE_PATH}${MV_FILE_NAME} " 
+    echo "--> " 
+
+    echo "--> 开始刷新CDN" 
+    python ${PROJ_BUILDER_TOOL_PATH}/Qcloud_CDN_API/QcloudCdnTools_V2.py RefreshCdnDir -u AKIDCCzXq6L0f5GG1XNrlcP3ShgPs52koNIx -p ZtxlIfnfHdjY7QTFl4A2e2B4g27wf8LI --dirs http://res.ylqt.2144gy.com/${REMOTE_PATH}/
+    if [ $? = 0 ];then
+      echo "--> CDN刷新成功 "
+    else
+      echo "--> Error : CDN刷新失败 "
+    fi
+  else
+    echo "--> Error : 上传${JP_BUILD_TARGET} Installation Package Failed "
     exit 1
   fi
 fi
 #endregion
 
 echo "--> " 
-echo "--> ALL Done" 
+echo "--> ALL Scripts Execute Done" 
 echo "--> " 
