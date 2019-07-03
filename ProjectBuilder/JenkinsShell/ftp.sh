@@ -1,6 +1,6 @@
 #!/bin/sh
 
-#����Jenkins���ӻ�����Ĳ���
+#½ÓÊÕJenkins¿ÉÊÓ»¯²å¼þµÄ²ÎÊý
 BUILD_TARGET=$Build_Target
 UNITY_CHANNEL=$Unity_Channel;
 UPLOAD_BUNDLES=$Upload_Bundles
@@ -12,7 +12,7 @@ elif  [[ $BUILD_TARGET = "iOS" ]]; then
   PROJ_GIT_PATH="/Users/mac2144/Documents/ylclient_ios_resbranch/ylclient"
   BUILD_TARGET_PATH="IOS"
 else 
-  echo "Log Error : ����Ĵ��ƽ̨���� : ${BUILD_TARGET}"
+  echo "Log Error : ´íÎóµÄ´ò°üÆ½Ì¨²ÎÊý : ${BUILD_TARGET}"
     exit 1
 fi
 
@@ -25,11 +25,11 @@ echo "--> Set LOCAL_PATH  : ${LOCAL_PATH}"
 echo "--> Set REMOTE_PATH : ${REMOTE_PATH}" 
 
 if [ ! -d $LOCAL_PATH ];then
-  echo "Log Error : ����û����Ҫ�ϴ�����ԴĿ¼ : ${LOCAL_PATH}"
+  echo "Log Error : ±¾µØÃ»ÓÐÐèÒªÉÏ´«µÄ×ÊÔ´Ä¿Â¼ : ${LOCAL_PATH}"
     exit 1
 fi
 
-lftp -u hulinchao,hulinchao@123 -p 2122 xx-ip <<EOF
+lftp -u 用户名,密码 -p 端口号 地址 <<EOF
 cd ${REMOTE_PATH}
 lcd ${LOCAL_PATH}
 ls
@@ -38,9 +38,9 @@ exit
 EOF
 
 if [ $? = 0 ];then
-   echo "--> �ϴ�${BUILD_TARGET} Bundles�ɹ� "
+   echo "--> ÉÏ´«${BUILD_TARGET} Bundles³É¹¦ "
 else
-   echo "--> �ϴ�${BUILD_TARGET} Bundlesʧ�� "
+   echo "--> ÉÏ´«${BUILD_TARGET} BundlesÊ§°Ü "
 fi
 
 fi

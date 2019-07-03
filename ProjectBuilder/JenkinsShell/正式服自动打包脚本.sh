@@ -413,7 +413,7 @@ if [[ ($JP_UPLOAD_BUNDLES = "true" && $JP_BUILD_BUNDLES = "true" && $JP_UNITY_SE
     exit 1
   fi
 
-lftp -u hulinchao,hulinchao@123 -p 2122 192.168.10.181 <<EOF
+lftp -u 用户名,密码 -p 端口号 地址 <<EOF
 set ftp:list-empty-ok yes
 cd /
 mkdir -p ${REMOTE_PATH}
@@ -477,7 +477,7 @@ if [[ ($JP_UPLOAD_PACKAGE = "true") ]]; then
     exit 1
   fi
 
-lftp -u hulinchao,hulinchao@123 -p 2122 192.168.10.181 <<EOF
+lftp -u 用户名,密码 -p 端口号 地址 <<EOF
 set ftp:list-empty-ok yes
 cd /
 mkdir -p ${REMOTE_PATH}
